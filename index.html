@@ -11,29 +11,26 @@ body {
   height: 100vh;
   background: #f2f2f2;
   font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
 }
 
 .ad {
-  width: 90%;
-  max-width: 360px;
+  width: 260px;
   background: white;
   border: 1px solid #ccc;
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  position: relative;
+  position: absolute;
   padding: 24px;
   text-align: center;
 }
 
 .close {
   position: absolute;
-  top: 8px;
+  top: 6px;
   right: 10px;
   border: none;
   background: none;
-  font-size: 24px;
+  font-size: 22px;
   cursor: pointer;
 }
 
@@ -44,7 +41,7 @@ body {
 }
 
 .product {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 12px;
 }
@@ -64,9 +61,8 @@ body {
 
 <body>
 
-<div class="ad" id="ad">
+<div class="ad" id="mainAd" style="left:50%; top:50%; transform:translate(-50%,-50%);">
   <button class="close" onclick="nextAd()">×</button>
-
   <div id="content">
     <div class="label">広告主：ミドリ電機</div>
     <div class="product">ねむりライト</div>
@@ -87,7 +83,9 @@ const scenes = [
   `<div class="message">大丈夫大丈夫！</div>`,
   `<div class="message">広告なんて
 消されるのが仕事だし！</div>`,
-  `<div class="message">終わりです。</div>`
+  `<div class="message">広告いっぱいあった方が
+見つけやすいよね！</div>`,
+  `<div class="message">増やしとくね！</div>`
 ];
 
 let index = 0;
@@ -95,12 +93,30 @@ let index = 0;
 function nextAd() {
   index++;
 
-  if (index >= scenes.length) {
-    document.getElementById("ad").style.display = "none";
-    return;
+  if (index < scenes.length) {
+    document.getElementById("content").innerHTML = scenes[index];
+  } else {
+    multiplyAds();
   }
+}
 
-  document.getElementById("content").innerHTML = scenes[index];
+function multiplyAds() {
+  document.getElementById("mainAd").style.display = "none";
+
+  for (let i = 0; i < 18; i++) {
+    const ad = document.createElement("div");
+    ad.className = "ad";
+
+    ad.style.left = Math.random() * 80 + "%";
+    ad.style.top = Math.random() * 80 + "%";
+
+    ad.innerHTML = `
+      <button class="close" onclick="this.parentElement.remove()">×</button>
+      <div class="message">ここだよ！</div>
+    `;
+
+    document.body.appendChild(ad);
+  }
 }
 </script>
 
