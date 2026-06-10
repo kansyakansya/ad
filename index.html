@@ -56,13 +56,23 @@ body {
   line-height: 1.7;
   white-space: pre-line;
 }
+
+.choices {
+  margin-top: 18px;
+}
+
+.choices button {
+  margin: 6px;
+  padding: 8px 20px;
+  font-size: 16px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="ad" id="mainAd" style="left:50%; top:50%; transform:translate(-50%,-50%);">
-  <button class="close" onclick="nextAd()">×</button>
+  <button class="close" id="closeBtn" onclick="handleClose()">×</button>
   <div id="content">
     <div class="label">広告主：ミドリ電機</div>
     <div class="product">ねむりライト</div>
@@ -71,52 +81,135 @@ body {
 </div>
 
 <script>
-const scenes = [
-  `
-  <div class="label">広告主：ミドリ電機</div>
-  <div class="product">ねむりライト</div>
-  <div class="copy">夜を、少しだけやさしく。</div>
-  `,
-  `<div class="message">あっ</div>`,
-  `<div class="message">びっくりした</div>`,
-  `<div class="message">急に消すから</div>`,
-  `<div class="message">大丈夫大丈夫！</div>`,
-  `<div class="message">広告なんて
-消されるのが仕事だし！</div>`,
-  `<div class="message">広告いっぱいあった方が
-見つけやすいよね！</div>`,
-  `<div class="message">増やしとくね！</div>`
-];
+const content = document.getElementById("content");
+const closeBtn = document.getElementById("closeBtn");
+const mainAd = document.getElementById("mainAd");
 
-let index = 0;
+let typing = false;
+let canClose = true;
+let phase = 0;
+let removedCount = 0;
 
-function nextAd() {
-  index++;
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-  if (index < scenes.length) {
-    document.getElementById("content").innerHTML = scenes[index];
-  } else {
-    multiplyAds();
+async function typeText(text) {
+  typing = true;
+  canClose = false;
+  content.innerHTML = `<div class="message"></div>`;
+  const box = content.querySelector(".message");
+
+  for (let i = 0; i < text.length; i++) {
+    box.textContent += text[i];
+    await sleep(70);
+  }
+
+  typing = false;
+}
+
+async function handleClose() {
+  if (typing) {
+    await typeText("待って待って話をきいて！");
+    await sleep(800);
+    startTalking();
+    return;
+  }
+
+  if (!canClose) return;
+
+  if (phase === 0) {
+    phase = 1;
+    startTalking();
   }
 }
 
-function multiplyAds() {
-  document.getElementById("mainAd").style.display = "none";
+async function startTalking() {
+  await typeText("あっ");
+  await sleep(500);
 
-  for (let i = 0; i < 18; i++) {
+  await typeText("びっくりした");
+  await sleep(500);
+
+  await typeText("急に消すから…");
+  await sleep(1000);
+
+  await typeText("大丈夫大丈夫！");
+  await sleep(500);
+
+  await typeText("広告なんて\n消されるのが仕事だし！");
+  canClose = true;
+
+  closeBtn.onclick = continueAfterJob;
+}
+
+async function continueAfterJob() {
+  canClose = false;
+
+  await sleep(1000);
+
+  await typeText("でも、消されるのってちょっと寂しいんだよね");
+  await sleep(700);
+
+  await typeText("少しの間で良いから広告表示してもいいよね？");
+
+  content.innerHTML += `
+    <div class="choices">
+      <button onclick="chooseYes()">はい</button>
+      <button onclick="chooseNo()">いいえ</button>
+    </div>
+  `;
+}
+
+async function chooseYes() {
+  content.innerHTML = `<div class="message">ありがとう！</div>`;
+  await sleep(800);
+  fillAds();
+}
+
+async function chooseNo() {
+  content.innerHTML = `<div class="message">えいっ</div>`;
+  await sleep(800);
+  fillAds();
+}
+
+function fillAds() {
+  mainAd.style.display = "none";
+
+  for (let i = 0; i < 28; i++) {
     const ad = document.createElement("div");
-    ad.className = "ad";
+    ad.className = "ad extraAd";
 
-    ad.style.left = Math.random() * 80 + "%";
-    ad.style.top = Math.random() * 80 + "%";
+    ad.style.left = Math.random() * 85 + "%";
+    ad.style.top = Math.random() * 85 + "%";
 
     ad.innerHTML = `
-      <button class="close" onclick="this.parentElement.remove()">×</button>
-      <div class="message">ここだよ！</div>
+      <button class="close" onclick="removeExtraAd(this)">×</button>
+      <div class="label">広告主：ミドリ電機</div>
+      <div class="product">ねむりライト</div>
+      <div class="copy">夜を、少しだけやさしく。</div>
     `;
 
     document.body.appendChild(ad);
   }
+}
+
+function removeExtraAd(button) {
+  button.parentElement.remove();
+  removedCount++;
+
+  if (removedCount >= 5) {
+    apologizeAndClean();
+  }
+}
+
+async function apologizeAndClean() {
+  const extras = document.querySelectorAll(".extraAd");
+  extras.forEach(ad => ad.remove());
+
+  mainAd.style.display = "block";
+  content.innerHTML = `<div class="message">ごめん、ごめん。つい出来心で…</div>`;
+  closeBtn.style.display = "none";
 }
 </script>
 
