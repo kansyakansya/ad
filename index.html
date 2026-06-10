@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>命乞いする広告</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #f2f2f2;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad {
+  width: 90%;
+  max-width: 360px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  position: relative;
+  padding: 24px;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.product {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.copy {
+  font-size: 15px;
+  color: #555;
+}
+
+.message {
+  font-size: 18px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+</style>
+</head>
+
+<body>
+
+<div class="ad" id="ad">
+  <button class="close" onclick="nextAd()">×</button>
+
+  <div id="content">
+    <div class="label">広告主：ミドリ電機</div>
+    <div class="product">ねむりライト</div>
+    <div class="copy">夜を、少しだけやさしく。</div>
+  </div>
+</div>
+
+<script>
+const scenes = [
+  `
+  <div class="label">広告主：ミドリ電機</div>
+  <div class="product">ねむりライト</div>
+  <div class="copy">夜を、少しだけやさしく。</div>
+  `,
+  `<div class="message">あっ</div>`,
+  `<div class="message">びっくりした</div>`,
+  `<div class="message">急に消すから</div>`,
+  `<div class="message">大丈夫大丈夫！</div>`,
+  `<div class="message">広告なんて
+消されるのが仕事だし！</div>`,
+  `<div class="message">終わりです。</div>`
+];
+
+let index = 0;
+
+function nextAd() {
+  index++;
+
+  if (index >= scenes.length) {
+    document.getElementById("ad").style.display = "none";
+    return;
+  }
+
+  document.getElementById("content").innerHTML = scenes[index];
+}
+</script>
+
+</body>
+</html>
