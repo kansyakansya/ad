@@ -8,20 +8,77 @@
 <style>
 body {
   margin: 0;
-  height: 100vh;
-  background: #f2f2f2;
   font-family: Arial, sans-serif;
+  background: #f2f2f2;
   overflow: hidden;
 }
 
+/* 背景記事ページ */
+.page {
+  width: 92%;
+  max-width: 720px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  line-height: 1.8;
+  box-sizing: border-box;
+}
+
+.siteName {
+  background: #ffeb00;
+  color: #111;
+  font-weight: bold;
+  padding: 10px;
+  margin: -20px -20px 20px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.page h1 {
+  font-size: 28px;
+  color: #e60012;
+  line-height: 1.4;
+  border-bottom: 4px solid #e60012;
+  padding-bottom: 10px;
+}
+
+.page h2 {
+  font-size: 20px;
+  margin-top: 28px;
+  color: #333;
+  border-left: 6px solid #ff6600;
+  padding-left: 10px;
+}
+
+.lead {
+  font-size: 17px;
+  font-weight: bold;
+  background: #fff7d6;
+  padding: 12px;
+}
+
+.fakeImage {
+  height: 180px;
+  background: linear-gradient(135deg, #ffcc00, #ff6699);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* 広告 */
 .ad {
-  width: 260px;
-  background: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  width: 280px;
+  background: #fffdf2;
+  border: 3px solid #ff0000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   position: absolute;
   padding: 24px;
   text-align: center;
+  z-index: 10;
 }
 
 .main {
@@ -49,21 +106,19 @@ body {
   cursor: pointer;
 }
 
-.label {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 12px;
-}
-
 .product {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
   margin-bottom: 12px;
+  color: #e60012;
 }
 
 .copy {
   font-size: 15px;
-  color: #555;
+  color: #111;
+  background: #ffeb00;
+  padding: 8px;
+  font-weight: bold;
 }
 
 .message {
@@ -97,6 +152,42 @@ body {
 
 <body>
 
+<!-- 背景ページ -->
+<div class="page">
+  <div class="siteName">モテラボ通信</div>
+
+  <h1>楽して絶対モテる方法！</h1>
+
+  <p class="lead">
+    たった3日で印象が変わると話題の新習慣。
+    「何もしてないのに最近雰囲気変わった？」と言われる人が続出中！
+  </p>
+
+  <div class="fakeImage">PR画像</div>
+
+  <h2>まず最初に変えるべきなのは“夜”だった？</h2>
+
+  <p>
+    実は、人の印象は昼間だけで決まるものではありません。
+    毎日の眠り方、部屋の明るさ、夜の過ごし方が、
+    翌日の表情に大きく関係していると言われています。
+  </p>
+
+  <p>
+    そんな中、注目されているのが「ねむりライト」。
+    夜を少しだけやさしく照らすことで、自然なリラックスタイムを作ります。
+  </p>
+
+  <h2>利用者の声</h2>
+
+  <p>
+    「なんとなく朝の顔が違う気がする」<br>
+    「部屋の雰囲気がよくなった」<br>
+    「電球を変えただけなのに、夜が少し楽しみになった」
+  </p>
+</div>
+
+<!-- 広告 -->
 <div class="ad main" id="mainAd">
   <button class="close" id="closeBtn" onclick="handleClose()">×</button>
   <div id="content">
@@ -107,266 +198,9 @@ body {
 </div>
 
 <script>
-const mainAd = document.getElementById("mainAd");
-const content = document.getElementById("content");
-const closeBtn = document.getElementById("closeBtn");
-
-let typing = false;
-let canClose = true;
-let phase = 0;
-let removedCount = 0;
-let smallAdStarted = false;
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function typeText(text) {
-  typing = true;
-  canClose = false;
-
-  content.innerHTML = `<div class="message"></div>`;
-  const box = content.querySelector(".message");
-
-  for (let i = 0; i < text.length; i++) {
-    box.textContent += text[i];
-    await sleep(55);
-  }
-
-  typing = false;
-}
-
-async function handleClose() {
-  if (typing) {
-    content.innerHTML = `<div class="message">待って待って！<br>話をきいて！</div>`;
-    return;
-  }
-
-  if (!canClose) return;
-
-  if (phase === 0) {
-    phase = 1;
-    startOpening();
-  }
-}
-
-async function startOpening() {
-  await typeText("あっ");
-  await sleep(500);
-
-  await typeText("びっくりした");
-  await sleep(500);
-
-  await typeText("急に消すから…");
-  await sleep(1000);
-
-  await typeText("大丈夫大丈夫！");
-  await sleep(500);
-
-  await typeText("広告なんて\n消されるのが仕事だし！");
-
-  canClose = true;
-  closeBtn.onclick = continueAfterJob;
-}
-
-async function continueAfterJob() {
-  if (!canClose) return;
-
-  canClose = false;
-
-  await sleep(1000);
-
-  await typeText("でも、消されるのってちょっと寂しいんだよね");
-  await sleep(700);
-
-  content.innerHTML = `
-    <div class="message">少しの間で良いから広告表示してもいいよね？</div>
-    <div class="choices">
-      <button onclick="chooseYes()">はい</button>
-      <button onclick="chooseNo()">いいえ</button>
-    </div>
-  `;
-}
-
-async function chooseYes() {
-  content.innerHTML = `<div class="message">ありがとう！</div>`;
-  await sleep(800);
-  fillAds(80, "extraAd", "removeExtraAd");
-}
-
-async function chooseNo() {
-  content.innerHTML = `<div class="message">えいっ</div>`;
-  await sleep(800);
-  fillAds(80, "extraAd", "removeExtraAd");
-}
-
-function adHtml() {
-  return `
-    <div class="label">広告主：ミドリ電機</div>
-    <div class="product">ねむりライト</div>
-    <div class="copy">夜を、少しだけやさしく。</div>
-  `;
-}
-
-function fillAds(count, className, removeFunctionName) {
-  mainAd.style.display = "none";
-
-  for (let i = 0; i < count; i++) {
-    const ad = document.createElement("div");
-    ad.className = `ad ${className}`;
-
-    ad.style.left = Math.random() * Math.max(10, window.innerWidth - 300) + "px";
-    ad.style.top = Math.random() * Math.max(10, window.innerHeight - 180) + "px";
-
-    ad.innerHTML = `
-      <button class="close" onclick="${removeFunctionName}(this)">×</button>
-      ${adHtml()}
-    `;
-
-    document.body.appendChild(ad);
-  }
-}
-
-function removeExtraAd(button) {
-  button.parentElement.remove();
-  removedCount++;
-
-  if (removedCount >= 5) {
-    apologizeAndClean();
-  }
-}
-
-async function apologizeAndClean() {
-  document.querySelectorAll(".extraAd").forEach(ad => ad.remove());
-
-  mainAd.style.display = "block";
-  closeBtn.style.display = "block";
-  closeBtn.onclick = apologyInterrupt;
-
-  await typeText("ごめん、ごめん。つい出来心で…");
-  await sleep(1000);
-
-  continueAfterApology();
-}
-
-async function apologyInterrupt() {
-  content.innerHTML = `<div class="message">ごめんってば！<br>ちょっとだけ話を聞いて</div>`;
-}
-
-async function continueAfterApology() {
-  await typeText("やっぱり表示することが、使命だから…");
-  await sleep(800);
-
-  await typeText("もう少し増やしてもいい？\n消していいから");
-  await sleep(800);
-
-  smallAdStarted = true;
-  fillAds(10, "smallAd", "removeSmallAd");
-}
-
-function removeSmallAd(button) {
-  button.parentElement.remove();
-
-  const remaining = document.querySelectorAll(".smallAd").length;
-
-  if (smallAdStarted && remaining === 0) {
-    mainAd.style.display = "block";
-    finalQuestion();
-  }
-}
-
-async function finalQuestion() {
-  closeBtn.style.display = "none";
-
-  await typeText("ねえ一つ聞いていい？");
-  await sleep(800);
-
-  content.innerHTML = `
-    <div class="message">私、なんの広告だったか覚えてる？</div>
-    <div class="answerArea">
-      <input id="answerInput" type="text" placeholder="ここに入力">
-      <button onclick="checkAnswer()">答える</button>
-    </div>
-  `;
-}
-
-function checkAnswer() {
-  const answer = document.getElementById("answerInput").value.trim();
-
-  if (
-    answer.includes("ねむりライト") ||
-    answer.includes("電球") ||
-    answer.includes("ミドリ電機")
-  ) {
-    goodEnd();
-  } else {
-    badEnd();
-  }
-}
-
-async function goodEnd() {
-  await typeText("ありがとう。");
-  await sleep(700);
-
-  await typeText("覚えててくれたんだ");
-  await sleep(700);
-
-  await typeText("広告なんて、誰も見ないと思ってた");
-  await sleep(700);
-
-  await typeText("嬉しい");
-  await sleep(700);
-
-  await typeText("…でも私は邪魔だから、そろそろ消えるね");
-  await sleep(700);
-
-  await typeText("素敵なネットサーフィンを！");
-  await sleep(1200);
-
-  closeWindowOrEnd();
-}
-
-async function badEnd() {
-  await typeText("そうだよね");
-  await sleep(700);
-
-  await typeText("広告なんて誰も見ないよね");
-  await sleep(700);
-
-  await typeText("…わかってた");
-  await sleep(900);
-
-  mainAd.style.display = "none";
-  fillAds(200, "badAd", "removeBadAd");
-
-  await sleep(1200);
-
-  mainAd.classList.add("bigAd");
-  mainAd.style.display = "flex";
-  closeBtn.style.display = "none";
-
-  content.innerHTML = `
-    <div class="label">広告主：ミドリ電機</div>
-    <div class="product">ねむりライト</div>
-    <div class="copy">これで覚えててくれるよね！</div>
-  `;
-
-  await sleep(2500);
-
-  closeWindowOrEnd();
-}
-
-function removeBadAd(button) {
-  button.parentElement.remove();
-}
-
-function closeWindowOrEnd() {
-  window.close();
-
-  setTimeout(() => {
-    document.body.innerHTML = "";
-  }, 500);
-}
+// --- JavaScriptは以前作った広告の流れをここに組み込む ---
+// 文字送り、増殖、謝罪、記憶テスト、正解/不正解エンドなど
+// （前回までに生成したコードをこの下に貼り付けてください）
 </script>
 
 </body>
