@@ -24,6 +24,13 @@ body {
   text-align: center;
 }
 
+.bigAd {
+  width: 80vw;
+  height: 60vh;
+  z-index: 9999;
+  font-size: 32px;
+}
+
 .close {
   position: absolute;
   top: 6px;
@@ -61,9 +68,16 @@ body {
   margin-top: 18px;
 }
 
-.choices button {
+.choices button,
+.answerArea button {
   margin: 6px;
   padding: 8px 20px;
+  font-size: 16px;
+}
+
+.answerArea input {
+  width: 80%;
+  padding: 10px;
   font-size: 16px;
 }
 </style>
@@ -89,6 +103,7 @@ let typing = false;
 let canClose = true;
 let phase = 0;
 let removedCount = 0;
+let smallRemovedCount = 0;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -102,7 +117,7 @@ async function typeText(text) {
 
   for (let i = 0; i < text.length; i++) {
     box.textContent += text[i];
-    await sleep(70);
+    await sleep(55);
   }
 
   typing = false;
@@ -139,7 +154,6 @@ async function startTalking() {
 
   await typeText("広告なんて\n消されるのが仕事だし！");
   canClose = true;
-
   closeBtn.onclick = continueAfterJob;
 }
 
@@ -164,27 +178,27 @@ async function continueAfterJob() {
 async function chooseYes() {
   content.innerHTML = `<div class="message">ありがとう！</div>`;
   await sleep(800);
-  fillAds();
+  fillAds(80, "extraAd", removeExtraAd);
 }
 
 async function chooseNo() {
   content.innerHTML = `<div class="message">えいっ</div>`;
   await sleep(800);
-  fillAds();
+  fillAds(80, "extraAd", removeExtraAd);
 }
 
-function fillAds() {
+function fillAds(count, className, removeFunction) {
   mainAd.style.display = "none";
 
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < count; i++) {
     const ad = document.createElement("div");
-    ad.className = "ad extraAd";
+    ad.className = `ad ${className}`;
 
-    ad.style.left = Math.random() * 85 + "%";
-    ad.style.top = Math.random() * 85 + "%";
+    ad.style.left = Math.random() * (window.innerWidth - 300) + "px";
+    ad.style.top = Math.random() * (window.innerHeight - 180) + "px";
 
     ad.innerHTML = `
-      <button class="close" onclick="removeExtraAd(this)">×</button>
+      <button class="close" onclick="${removeFunction.name}(this)">×</button>
       <div class="label">広告主：ミドリ電機</div>
       <div class="product">ねむりライト</div>
       <div class="copy">夜を、少しだけやさしく。</div>
@@ -204,12 +218,113 @@ function removeExtraAd(button) {
 }
 
 async function apologizeAndClean() {
-  const extras = document.querySelectorAll(".extraAd");
-  extras.forEach(ad => ad.remove());
+  document.querySelectorAll(".extraAd").forEach(ad => ad.remove());
 
   mainAd.style.display = "block";
-  content.innerHTML = `<div class="message">ごめん、ごめん。つい出来心で…</div>`;
+  closeBtn.style.display = "block";
+  closeBtn.onclick = afterApologyClose;
+
+  await typeText("ごめん、ごめん。つい出来心で…");
+  canClose = true;
+}
+
+async function afterApologyClose() {
+  await typeText("ごめんってば！\nちょっとだけ話を聞いて");
+  await sleep(900);
+
+  await typeText("やっぱり表示することが、使命だから…");
+  await sleep(800);
+
+  await typeText("もう少し増やしてもいい？\n消していいから");
+  await sleep(900);
+
+  fillAds(10, "smallAd", removeSmallAd);
+}
+
+function removeSmallAd(button) {
+  button.parentElement.remove();
+  smallRemovedCount++;
+
+  const left = document.querySelectorAll(".smallAd").length;
+
+  if (left === 0) {
+    mainAd.style.display = "block";
+    finalQuestion();
+  }
+}
+
+async function finalQuestion() {
   closeBtn.style.display = "none";
+
+  await typeText("ねえ一つ聞いていい？");
+  await sleep(800);
+
+  await typeText("私、なんの広告だったか覚えてる？");
+
+  content.innerHTML += `
+    <div class="answerArea">
+      <input id="answerInput" type="text" placeholder="ここに入力">
+      <button onclick="checkAnswer()">答える</button>
+    </div>
+  `;
+}
+
+async function checkAnswer() {
+  const answer = document.getElementById("answerInput").value.trim();
+
+  if (
+    answer.includes("ねむりライト") ||
+    answer.includes("電球") ||
+    answer.includes("ミドリ電機")
+  ) {
+    goodEnd();
+  } else {
+    badEnd();
+  }
+}
+
+async function goodEnd() {
+  await typeText("ありがとう。");
+  await sleep(700);
+  await typeText("覚えててくれたんだ");
+  await sleep(700);
+  await typeText("広告なんて、誰も見ないと思ってた");
+  await sleep(700);
+  await typeText("嬉しい");
+  await sleep(700);
+  await typeText("…でも私は邪魔だから、そろそろ消えるね");
+  await sleep(700);
+  await typeText("素敵なネットサーフィンを！");
+  await sleep(1200);
+  window.close();
+}
+
+async function badEnd() {
+  await typeText("そうだよね");
+  await sleep(700);
+  await typeText("広告なんて誰も見ないよね");
+  await sleep(700);
+  await typeText("…わかってた");
+  await sleep(900);
+
+  fillAds(200, "badAd", removeNothing);
+
+  await sleep(1200);
+
+  mainAd.style.display = "block";
+  mainAd.classList.add("bigAd");
+  content.innerHTML = `
+    <div class="label">広告主：ミドリ電機</div>
+    <div class="product">ねむりライト</div>
+    <div class="copy">これで覚えててくれるよね！</div>
+  `;
+
+  await sleep(2500);
+  window.close();
+}
+
+function removeNothing(button) {
+  button.parentElement.remove();
 }
 </script>
 
